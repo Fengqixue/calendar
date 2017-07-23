@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #wrap {
+            width: 320px;
+            height: 500px;
+            background: lightgray;
+            box-sizing: border-box;
+        }
+
+        #digitalClock {
+            height: 100px;
+            border-bottom: 1px solid gray;
+            box-sizing: border-box;
+            padding: 10px 20px;
+        }
+
+        #timeDiv {
+            font-size: 35px;
+            color: black;
+            height: 45px;
+        }
+
+        #dateDiv {
+            height: 35px;
+            line-height: 35px;
+            font-size: 20px;
+            color: cornflowerblue;
+        }
+
+        #calendar {
+            padding: 10px 20px;
+            height: 400px;
+            box-sizing: border-box;
+            /* position: relative; */
+            overflow: hidden;
+        }
+
+        section {
+            height: 30px;
+            box-sizing: border-box;
+            font: 20px/30px "微软雅黑";
+        }
+
+        span {
+            display: block;
+            width: 40px;
+            text-align: center;
+            float: right;
+        }
+
+        a {
+            color: black;
+            float: left;
+            width: 130px;
+        }
+
+        li {
+            width: 40px;
+            float: left;
+            height: 50px;
+            font: 20px/50px "微软雅黑";
+            list-style: none;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .clearFix::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        .box {
+            width: 280px;
+            height: 550px;
+        }
+
+        #content {
+            width: 280px;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        #ul2 {
+            /* margin-top: -50px; */
+            height: 300px;
+        }
+
+        .baozhuang {
+            /* height: 250px; */
+            width: 300px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="digitalClock">
+            <div id="timeDiv"></div>
+            <div id="dateDiv"></div>
+
+        </div>
+        <div id="calendar">
+            <section>
+                <a></a>
+                <span>∨</span>
+                <span>∧</span>
+            </section>
+            <ul class="clearFix">
+                <li>一</li>
+                <li>二</li>
+                <li>三</li>
+                <li>四</li>
+                <li>五</li>
+                <li>六</li>
+                <li>日</li>
+            </ul>
+            <div id="content">
+                <div class="box">
+                    <ul class="clearFix" id="ul1">
+                    </ul>
+                    <div class="baozhuang">
+                        <ul class="clearFix" id="ul2">
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <script src="tween.js"></script>
+    <script>
+        var wrap = document.getElementById("wrap");
+        var timeDiv = document.getElementById("timeDiv");
+        var dateDiv = document.getElementById("dateDiv");
+        var calendarA = document.getElementsByTagName("a")[0];
+        var uls = document.getElementsByTagName("ul");
+        var lis1 = uls[1].getElementsByTagName("li");
+        var lis2 = uls[2].getElementsByTagName("li");
+        var spans = document.getElementsByTagName("span");
+        var box = document.getElementsByClassName("box")[0];
+        var baozhuang = document.getElementsByClassName("baozhuang")[0];
+        changeTime();
+        setInterval(function () {
+            changeTime();
+        }, 1000)
+        function add0(n) {
+            return n < 10 ? "0" + n : "" + n;
+        }
+        function changeTime() {
+            var time = new Date();
+            var strTime = add0(time.getHours()) + ":" + add0(time.getMinutes()) + ":" + add0(time.getSeconds());
+            timeDiv.innerHTML = strTime;
+            var strDate = time.getFullYear() + "年" + (time.getMonth() + 1) + "月" + time.getDate() + "日";
+            dateDiv.innerHTML = strDate;
+
+        }
+        function create() {
+            var str = "";
+            for (var i = 0; i < 42; i++) {
+                str += "<li style='border:2px solid transparent' ></li>";
+            }
+            uls[1].innerHTML = str;
+            uls[2].innerHTML = str;
+        }
+        create();
+        var today;
+        var numNext;
+        function setCalendar(lis) {
+            numNext = 0;
+            var strCalDate = nowtime.getFullYear() + "年" + (nowtime.getMonth() + 1) + "月";
+            calendarA.innerHTML = strCalDate;
+            var monthlength = getMonthLength(nowtime);
+            var firstDay = getDayOfFirstDate(nowtime);
+            var preMonthlength = getPreMonthLength(nowtime);
+            var nowTime = new Date();
+            if (nowtime.getMonth() == nowTime.getMonth() && nowtime.getFullYear() == nowTime.getFullYear()) {
+                today = nowTime.getDate() + firstDay - 2;
+                lis[today].style.background = "red";
+
+            } else {
+                lis[today].style.background = "none";
+            }
+
+            for (var i = firstDay - 1; i < firstDay + monthlength - 1; i++) {
+                lis[i].innerHTML = i + 2 - firstDay;
+                // lis[i].style.color = "black";
+            }
+            for (var i = firstDay + monthlength - 1; i < 42; i++) {
+                lis[i].innerHTML = i - firstDay - monthlength + 2;
+                numNext++;
+                // lis[i].style.color = "white";
+            }
+            for (var i = 0; i < firstDay - 1; i++) {
+                lis[i].innerHTML = preMonthlength - firstDay + i + 2;
+                // lis[i].style.color = "white";
+            }
+        }
+        function getMonthLength(nowtime) {
+            nowtime = new Date(nowtime);
+            nowtime.setMonth(nowtime.getMonth() + 1);
+            nowtime.setDate(0);
+            return nowtime.getDate();
+        }
+        function getDayOfFirstDate(nowtime) {
+            var day = nowtime.getDay();
+            if (day == 0) {
+                day = 7;
+            }
+            return day;
+        }
+        function getPreMonthLength(nowtime) {
+            nowtime = new Date(nowtime);
+            nowtime.setDate(0);
+            return nowtime.getDate();
+        }
+
+        function setToPreMoth(lis) {
+            nowtime.setMonth(nowtime.getMonth() - 1);
+            setCalendar(lis);
+        }
+        function setToNextMoth(lis) {
+            nowtime.setMonth(nowtime.getMonth() + 1);
+            setCalendar(lis);
+        }
+        spans[1].onclick = function () {
+            clearColor();
+            setCalendar(lis2);
+            setToPreMoth(lis1);
+            if (numNext > 7) {
+                baozhuang.style.height = "200px";
+                uls[2].style.marginTop = "-100px";
+            } else {
+                baozhuang.style.height = "250px";
+                uls[2].style.marginTop = "-50px";
+            }
+            var height = "-" + getComputedStyle(baozhuang).height;
+            box.style.marginTop = height;
+            move(box, { "margin-top": 0 }, 2000, function () {
+                changeColor(lis1);
+            });
+        }
+        spans[0].onclick = function () {
+            clearColor();
+            if (numNext > 7) {
+                baozhuang.style.height = "200px";
+                uls[2].style.marginTop = "-100px";
+            } else {
+                baozhuang.style.height = "250px";
+                uls[2].style.marginTop = "-50px";
+            }
+            var height = parseFloat("-" + getComputedStyle(baozhuang).height);
+            setToNextMoth(lis2);
+            var j = { "margin-top": height };
+            move(box, j, 2000, function () {
+                box.style.marginTop = "0px";
+                setCalendar(lis1);
+                changeColor(lis1);
+            })
+        }
+        var nowtime = new Date();
+        nowtime.setDate(1);
+        setCalendar(lis1);
+        for (var i = 0; i < 42; i++) {
+            lis1[i].onmouseover = function () {
+                this.style.border = "2px black solid";
+            }
+            lis1[i].onmouseout = function () {
+                this.style.border = "2px solid transparent";
+            }
+        }
+        function move(obj, j, duration, fn, ease) {
+            var ease = ease || "linear";
+            var s = {};
+            var d = duration;
+            var oldt = new Date().getTime();
+            for (var attr in j) {
+                s[attr] = {};
+                s[attr].b = parseFloat(getComputedStyle(obj)[attr]);
+                s[attr].c = j[attr] - s[attr].b;
+            }
+            clearInterval(obj.timer);
+            obj.timer = setInterval(function () {
+                for (var attr in s) {
+                    var t = new Date().getTime() - oldt;
+                    if (t >= duration) {
+                        t = duration;
+                    }
+                    var b = s[attr].b;
+                    var c = s[attr].c;
+                    var v = Tween[ease](t, b, c, d);
+                    obj.style[attr] = attr == "opacity" ? v : (v + "px");
+                }
+                if (t == d) {
+                    clearInterval(obj.timer);
+                    fn && fn();
+                }
+            }, 16)
+        }
+         function changeColor(lis) {
+            var monthlength = getMonthLength(nowtime);
+            var firstDay = getDayOfFirstDate(nowtime);
+            var preMonthlength = getPreMonthLength(nowtime);
+            for (var i = firstDay - 1; i < firstDay + monthlength - 1; i++) {
+                lis[i].style.color = "black";
+            }
+            for (var i = firstDay + monthlength - 1; i < 42; i++) {
+                lis[i].style.color = "white";
+            }
+            for (var i = 0; i < firstDay - 1; i++) {
+                lis[i].style.color = "white";
+            }
+        }
+        function clearColor() {
+            for(var i =0;i<42;i++){
+                lis1[i].style.color="black";
+                lis2[i].style.color="black";
+            }
+        }
+        changeColor(lis1);
+    </script>
+</body>
+
+</html>
